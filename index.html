@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WorldOIL</title>
+</head>
+
+<body>
+
+<h1>WorldOIL is loading</h1>
+
+<input id="address" placeholder="Address">
+<input id="phone" placeholder="Phone">
+<input id="time" type="datetime-local">
+
+<button onclick="submitRequest()">Submit</button>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -5,30 +21,28 @@
   const firebaseConfig = {
     apiKey: "AIzaSyCcDTr6FBQ06ajniOC-gH-pXkfvwRa3XMY",
     authDomain: "worldoil.firebaseapp.com",
-    projectId: "worldoil"
+    projectId: "worldoil",
+    storageBucket: "worldoil.firebasestorage.app",
+    messagingSenderId: "220116522882",
+    appId: "1:220116522882:web:b768705a85cb9a31ce219b"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   window.submitRequest = async function () {
-    const address = document.getElementById("address").value;
-    const phone = document.getElementById("phone").value;
-    const time = document.getElementById("time").value;
-
-    if (!address || !phone || !time) {
-      alert("Fill everything");
-      return;
-    }
-
     await addDoc(collection(db, "requests"), {
-      address,
-      phone,
-      time,
-      status: "pending",
-      createdAt: new Date()
+      address: document.getElementById("address").value,
+      phone: document.getElementById("phone").value,
+      time: document.getElementById("time").value,
+      status: "pending"
     });
 
-    alert("Request sent!");
-  }
+    alert("sent!");
+  };
 </script>
+
+</body>
+</html>
+
+ 
