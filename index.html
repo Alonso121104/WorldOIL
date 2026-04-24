@@ -30,26 +30,36 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  window.submitRequest = async function () {
-    const address = document.getElementById("address").value;
-    const phone = document.getElementById("phone").value;
-    const time = document.getElementById("time").value;
+window.submitRequest = async function () {
+  const address = document.getElementById("address").value;
+  const phone = document.getElementById("phone").value;
+  const time = document.getElementById("time").value;
 
-    if (!address || !phone || !time) {
-      alert("Fill all fields");
-      return;
-    }
+  if (!address || !phone || !time) {
+    alert("Fill all fields");
+    return;
+  }
 
-    await addDoc(collection(db, "requests"), {
+  const res = await fetch("https://worldoil.onrender.com/appointment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
       address,
       phone,
-      time,
-      status: "pending",
-      createdAt: new Date()
-    });
+      time
+    })
+  });
 
+  const data = await res.json();
+
+  if (data.success) {
     alert("Request sent!");
-  };
+  } else {
+    alert("Error sending request");
+  }
+};
 </script>
 
 </body>
