@@ -8,6 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({ status: "live" });
+});
+
 // 🔐 Use environment variables in production
 const accountSid = process.env.TWILIO_SID || "YOUR_TWILIO_SID";
 const authToken = process.env.TWILIO_AUTH_TOKEN || "YOUR_TWILIO_AUTH_TOKEN";
