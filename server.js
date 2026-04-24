@@ -3,25 +3,44 @@ const cors = require("cors");
 const twilio = require("twilio");
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const client = new twilio("AC5faa95af4d7f0d604b64d30a440e71d2", "a90dc78bc2549216c6684572a0b55aec");
+// 🔐 Use environment variables in production
+const accountSid = process.env.TWILIO_SID || "YOUR_TWILIO_SID";
+const authToken = process.env.TWILIO_AUTH_TOKEN || "YOUR_TWILIO_AUTH_TOKEN";
 
+const client = twilio(accountSid, authToken);
+
+// 📩 Appointment endpoint
 app.post("/appointment", async (req, res) => {
   const { name, phone, address, time } = req.body;
 
+  if (!name || !phone || !address || !time) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
   try {
-    await client.messages.create({
-      body: `New Appointment:\n${name}\n${phone}\n${address}\n${time}`,
-      from: "+13236010663",
-      to: "+13236134802"
+    const message = await client.messages.create({
+      body: `📅 New Appointment\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nTime: ${time}`,
+      from: process.env.TWILIO_FROM_NUMBER || "+1234567890", // your Twilio number
+      to: process.env.TO_NUMBER || "+19876543210" // your verified number
     });
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      messageSid: message.sid
+    });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(3000, () => console.log("Server running"));
+// 🌐 Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
