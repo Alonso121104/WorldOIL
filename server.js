@@ -8,28 +8,30 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/appointment", async (req, res) => {
-  const { address, phone, time } = req.body;
-
-// 🔐 Use environment variables in production
-const accountSid = process.env.TWILIO_SID || "YOUR_TWILIO_SID";
-const authToken = process.env.TWILIO_AUTH_TOKEN || "YOUR_TWILIO_AUTH_TOKEN";
+// Twilio setup (ONLY ONCE)
+const accountSid = process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 const client = twilio(accountSid, authToken);
 
-// 📩 Appointment endpoint
-app.post("/appointment", async (req, res) => {
-  const { name, phone, address, time } = req.body;
+// Health check
+app.get("/", (req, res) => {
+  res.json({ status: "live" });
+});
 
-  if (!name || !phone || !address || !time) {
+// Appointment route (ONLY ONCE)
+app.post("/appointment", async (req, res) => {
+  const { address, phone, time } = req.body;
+
+  if (!address || !phone || !time) {
     return res.status(400).json({ error: "Missing fields" });
   }
 
   try {
     const message = await client.messages.create({
-      body: `📅 New Appointment\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nTime: ${time}`,
-      from: process.env.TWILIO_FROM_NUMBER || "+1234567890", // your Twilio number
-      to: process.env.TO_NUMBER || "+19876543210" // your verified number
+      body: `📅 New Appointment\n\nAddress: ${address}\nPhone: ${phone}\nTime: ${time}`,
+      from: process.env.TWILIO_FROM_NUMBER,
+      to: process.env.TO_NUMBER
     });
 
     res.json({
@@ -42,8 +44,8 @@ app.post("/appointment", async (req, res) => {
   }
 });
 
-// 🌐 Start server
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server running on port", PORT);
 });
