@@ -8,9 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
+app.post("/appointment", async (req, res) => {
+  const { address, phone, time } = req.body;
 
 // 🔐 Use environment variables in production
 const accountSid = process.env.TWILIO_SID || "YOUR_TWILIO_SID";
