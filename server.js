@@ -20,7 +20,7 @@ const client = twilio(accountSid, authToken);
 
 // Health check
 app.get("/", (req, res) => {
-  res.json({ status: "live" });
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Appointment route (ONLY ONCE)
