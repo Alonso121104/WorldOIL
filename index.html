@@ -18,7 +18,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
+ const firebaseConfig = {
     apiKey: "AIzaSyCcDTr6FBQ06ajniOC-gH-pXkfvwRa3XMY",
     authDomain: "worldoil.firebaseapp.com",
     projectId: "worldoil",
@@ -31,14 +31,24 @@
   const db = getFirestore(app);
 
   window.submitRequest = async function () {
+    const address = document.getElementById("address").value;
+    const phone = document.getElementById("phone").value;
+    const time = document.getElementById("time").value;
+
+    if (!address || !phone || !time) {
+      alert("Fill all fields");
+      return;
+    }
+
     await addDoc(collection(db, "requests"), {
-      address: document.getElementById("address").value,
-      phone: document.getElementById("phone").value,
-      time: document.getElementById("time").value,
-      status: "pending"
+      address,
+      phone,
+      time,
+      status: "pending",
+      createdAt: new Date()
     });
 
-    alert("sent!");
+    alert("Request sent!");
   };
 </script>
 
